@@ -2,14 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardly</title>
+    <title>Edit Card</title>
     {{ bootstrap.load_css() }}
-    {{ bootstrap.load_js() }}
 </head>
 <body>
-    <h1 class="text-center fw-bold display-4">Cardly</h1>
+    <div style="text-align:center;">
+        <h1>{{ settings.header_text }}</h1><br>
+
+        <div style="border-style:solid; margin-left: 100px; margin-right:100px">
+        {% if settings.user_image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
+        {% else %}
+            <p>Upload image to preview.</p>
+        {% endif %}
+        </div><br>
+
+        <h6>{{ settings.footer_text }}</h6>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar Forms -->
+            <div class="col-md-3 p-4" style="background-color: #f8f9fa;">
+                <h4>Edit Your Card</h4>
     
+                <form method="POST" action="/">
+                    {{ header_form.csrf_token }}
+                    {{ header_form.header_text.label(class="form-label") }}
+                    {{ header_form.header_text(size=32, class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+    
+                <form method="POST" action="/">
+                    {{ footer_form.csrf_token }}
+                    {{ footer_form.footer_text.label(class="form-label mt-3") }}
+                    {{ footer_form.footer_text(size=32, class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+    
+                <form method="POST" action="/" enctype="multipart/form-data">
+                    {{ imageupload_form.csrf_token }}
+                    {{ imageupload_form.image.label(class="form-label mt-3") }}
+                    {{ imageupload_form.image(class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+    </div>
 </body>
 </html>

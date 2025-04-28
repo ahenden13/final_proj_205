@@ -1,11 +1,61 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, flash, redirect, request
 from flask_bootstrap import Bootstrap5
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+from wtforms.fields import FileField
+from wtforms.fields import ColorField
+from werkzeug.utils import secure_filename
+from PIL import Image
+import os
+import uuid
 
-# create an instance of Flask
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'ott3r' 
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 bootstrap = Bootstrap5(app)
 
-# Home Page
-@app.route('/')
-def home():
-    return render_template('index.html')
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+class HeaderForm(FlaskForm):
+    header_text = StringField('Header Text', validators=[DataRequired()])
+
+class FooterForm(FlaskForm):
+    footer_text = StringField('Footer Text', validators=[DataRequired()])
+
+class ImageUploadForm(FlaskForm):
+    image = FileField('Upload an Image')
+
+current_settings = {
+    'header_text': 'Header Text',
+    'footer_text': 'Footer Text',
+    'user_image_filename': None
+}
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    header_form = HeaderForm()
+    footer_form = FooterForm()
+    imageupload_form = ImageUploadForm()
+
+    if request.method == 'POST':
+        if header_form.header_text.data:
+            current_settings['header_text'] = header_form.header_text.data
+
+        if footer_form.footer_text.data:
+            current_settings['footer_text'] = footer_form.footer_text.data
+
+        if imageupload_form.image.data:
+            image_file = imageupload_form.image.data
+            filename = secure_filename(image_file.filename)
+            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            current_settings['user_image_filename'] = filename
+
+    return render_template('index.html', 
+                           header_form=header_form, 
+                           footer_form=footer_form,
+                           imageupload_form=imageupload_form,
+                           settings=current_settings)
+
+if __name__ == '__main__':
+    app.run(debug=True)
