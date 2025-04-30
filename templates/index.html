@@ -13,6 +13,8 @@
         <div style="border-style:solid; margin-left: 100px; margin-right:100px">
         {% if settings.user_image_filename %}
             <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
+        {% elif settings.searched_image_url %}
+            <img src= "{{ settings.searched_image_url }}" style="max-width: 400px;">
         {% else %}
             <p>Upload image to preview.</p>
         {% endif %}
@@ -46,6 +48,13 @@
                     {{ imageupload_form.csrf_token }}
                     {{ imageupload_form.image.label(class="form-label mt-3") }}
                     {{ imageupload_form.image(class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+
+                <form method="POST" action="/">
+                    {{ search_image_form.csrf_token }}
+                    {{ search_image_form.search_text.label(class="form-label mt-3") }}
+                    {{ search_image_form.search_text(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
     </div>

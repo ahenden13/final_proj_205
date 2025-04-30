@@ -9,6 +9,10 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import os
 import uuid
+import requests, json
+from pprint import pprint
+from io import BytesIO
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ott3r' 
@@ -26,10 +30,15 @@ class FooterForm(FlaskForm):
 class ImageUploadForm(FlaskForm):
     image = FileField('Upload an Image')
 
+class SearchImageForm(FlaskForm):
+    search_text = StringField('Search Image')
+
 current_settings = {
     'header_text': 'Header Text',
     'footer_text': 'Footer Text',
-    'user_image_filename': None
+    'user_image_filename': None,
+    'searched_image': None,
+    'searched_image_url': None
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -37,6 +46,7 @@ def index():
     header_form = HeaderForm()
     footer_form = FooterForm()
     imageupload_form = ImageUploadForm()
+    search_image_form = SearchImageForm()
 
     if request.method == 'POST':
         if header_form.header_text.data:
@@ -51,10 +61,28 @@ def index():
             image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             current_settings['user_image_filename'] = filename
 
+        if search_image_form.search_text.data:
+            page_num = random.randint(0, 10) * random.randint(0, 10)
+            current_settings['searched_image'] = search_image_form.search_text.data
+            url = f"https://api.unsplash.com/search/photos?page={page_num}&query={current_settings['searched_image']}"
+            headers = {
+                "Accept-Version": "v1",
+                "Authorization": "Client-ID 9A5ot-o2F1PHh8ERLsxH09Fls1g8rQP9T2CH4bE3jFQ"
+            }
+            try:
+                r = requests.get(url, headers=headers)
+                data = r.json()
+                image_url = data['results'][0]['urls']['regular']
+                current_settings['searched_image_url'] = image_url
+                
+            except:
+                print('please try again')
+
     return render_template('index.html', 
                            header_form=header_form, 
                            footer_form=footer_form,
                            imageupload_form=imageupload_form,
+                           search_image_form=search_image_form,
                            settings=current_settings)
 
 if __name__ == '__main__':
