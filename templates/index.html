@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Card</title>
     {{ bootstrap.load_css() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Default font */
+        }
+
+        .garamond-style {
+            font-family: Garamond, serif;
+        }
+
+        .courier-style {
+            font-family: Courier New, monospace;
+        }
+
+        .tagesschrift-regular {
+            font-family: "Tagesschrift", system-ui;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
 </head>
 <body>
     <div style="text-align:center;">
@@ -13,6 +35,8 @@
         <div style="border-style:solid; margin-left: 100px; margin-right:100px">
         {% if settings.user_image_filename %}
             <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
+        {% elif settings.searched_image_url %}
+            <img src= "{{ settings.searched_image_url }}" style="max-width: 400px;">
         {% else %}
             <p>Upload image to preview.</p>
         {% endif %}
@@ -35,6 +59,13 @@
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
 
+                <select id="headerFontSelector">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Garamond, serif">Garamond</option>
+                    <option value="Courier New, monospace">Courier New</option>
+                    <option value="Tagesschrift, system-ui">Tagesschrift</option>
+                </select>
+
                 <!--update-->
                 <form method="POST" action="/">
                     {{ headercolor_form.csrf_token }}
@@ -50,6 +81,13 @@
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
 
+                <select id="footerFontSelector">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Garamond, serif">Garamond</option>
+                    <option value="Courier New, monospace">Courier New</option>
+                    <option value="Tagesschrift, system-ui">Tagesschrift</option>
+                </select>
+
                 <!--update-->
                 <form method="POST" action="/">
                     {{ footercolor_form.csrf_token }}
@@ -64,6 +102,35 @@
                     {{ imageupload_form.image(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+
+                <form method="POST" action="/">
+                    {{ search_image_form.csrf_token }}
+                    {{ search_image_form.search_text.label(class="form-label mt-3") }}
+                    {{ search_image_form.search_text(class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
     </div>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const fontSelector = document.getElementById("headerFontSelector");
+        const header = document.querySelector("h1");
+
+        fontSelector.addEventListener("change", (event) => {
+            const selectedFont = event.target.value;
+            header.style.fontFamily = selectedFont;
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const fontSelector = document.getElementById("footerFontSelector");
+        const header = document.querySelector("h6");
+
+        fontSelector.addEventListener("change", (event) => {
+            const selectedFont = event.target.value;
+            header.style.fontFamily = selectedFont;
+        });
+    });
+</script>
 </html>

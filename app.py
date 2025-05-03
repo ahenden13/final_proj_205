@@ -9,6 +9,10 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import os
 import uuid
+import requests, json
+from pprint import pprint
+from io import BytesIO
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ott3r' 
@@ -18,6 +22,16 @@ bootstrap = Bootstrap5(app)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 class HeaderForm(FlaskForm):
+    header_text = StringField('Header Text', validators=[DataRequired()])
+
+class FooterForm(FlaskForm):
+    footer_text = StringField('Footer Text', validators=[DataRequired()])
+
+class ImageUploadForm(FlaskForm):
+    image = FileField('Upload an Image')
+
+class SearchImageForm(FlaskForm):
+    search_text = StringField('Search Image')
     header_text = StringField(
         'Header Text', validators=[DataRequired()]
     )
@@ -47,6 +61,9 @@ class FooterColorForm(FlaskForm):
 current_settings = {
     'header_text': 'Header Text',
     'footer_text': 'Footer Text',
+    'user_image_filename': None,
+    'searched_image': None,
+    'searched_image_url': None,
     #update
     'header_color': '#000000',
     'footer_color': '#000000',
@@ -58,6 +75,7 @@ def index():
     header_form = HeaderForm()
     footer_form = FooterForm()
     imageupload_form = ImageUploadForm()
+    search_image_form = SearchImageForm()
     #update
     headercolor_form = HeaderColorForm()
     footercolor_form = FooterColorForm()
@@ -83,10 +101,28 @@ def index():
             image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             current_settings['user_image_filename'] = filename
 
+        if search_image_form.search_text.data:
+            page_num = random.randint(0, 10) * random.randint(0, 10)
+            current_settings['searched_image'] = search_image_form.search_text.data
+            url = f"https://api.unsplash.com/search/photos?page={page_num}&query={current_settings['searched_image']}"
+            headers = {
+                "Accept-Version": "v1",
+                "Authorization": "Client-ID 9A5ot-o2F1PHh8ERLsxH09Fls1g8rQP9T2CH4bE3jFQ"
+            }
+            try:
+                r = requests.get(url, headers=headers)
+                data = r.json()
+                image_url = data['results'][0]['urls']['regular']
+                current_settings['searched_image_url'] = image_url
+                
+            except:
+                print('please try again')
+
     return render_template('index.html', 
                            header_form=header_form, 
                            footer_form=footer_form,
                            imageupload_form=imageupload_form,
+                           search_image_form=search_image_form,
                            #update
                            headercolor_form=headercolor_form,
                            footercolor_form=footercolor_form,
