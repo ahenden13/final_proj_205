@@ -57,17 +57,23 @@ class FooterColorForm(FlaskForm):
         'Footer Text Color'
     )
 
+class HeaderFontForm(FlaskForm):
+    font_text = StringField(
+        'Font', validators=[DataRequired()]
+    )
+
 
 current_settings = {
     'header_text': 'Header Text',
     'footer_text': 'Footer Text',
     'user_image_filename': None,
     'searched_image': None,
-    'searched_image_url': None
+    'searched_image_url': None,
     #update
     'header_color': '#000000',
     'footer_color': '#000000',
-    'user_image_filename': None
+    'user_image_filename': None,
+    'font_text': None
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -79,6 +85,7 @@ def index():
     #update
     headercolor_form = HeaderColorForm()
     footercolor_form = FooterColorForm()
+    headerfont_form = HeaderFontForm()
 
     if request.method == 'POST':
         if header_form.header_text.data:
@@ -118,6 +125,9 @@ def index():
             except:
                 print('please try again')
 
+        if headerfont_form.font_text.data:
+            current_settings['font_text'] = headerfont_form.font_text.data
+
     return render_template('index.html', 
                            header_form=header_form, 
                            footer_form=footer_form,
@@ -126,6 +136,7 @@ def index():
                            #update
                            headercolor_form=headercolor_form,
                            footercolor_form=footercolor_form,
+                           headerfont_form=headerfont_form,
                            settings=current_settings)
 
 if __name__ == '__main__':
