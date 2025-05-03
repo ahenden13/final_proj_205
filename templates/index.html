@@ -9,6 +9,7 @@
 <body>
     <div style="text-align:center;">
         <h1>{{ settings.header_text }}</h1><br>
+        <h1 style="color: {{ settings.header_color }}">{{ settings.header_text }}</h1>
 
         <div style="border-style:solid; margin-left: 100px; margin-right:100px">
         {% if settings.user_image_filename %}
@@ -21,6 +22,7 @@
         </div><br>
 
         <h6>{{ settings.footer_text }}</h6>
+        <h6 style="color: {{ settings.footer_color }}">{{ settings.footer_text }}</h6>
     </div>
 
     <div class="container-fluid">
@@ -36,11 +38,27 @@
                     {{ header_form.header_text(size=32, class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+
+                <!--update-->
+                <form method="POST" action="/">
+                    {{ headercolor_form.csrf_token }}
+                    {{ headercolor_form.header_color.label(class="form-label mt-3") }}
+                    {{ headercolor_form.header_color(class="form-control form-control-color mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
     
                 <form method="POST" action="/">
                     {{ footer_form.csrf_token }}
                     {{ footer_form.footer_text.label(class="form-label mt-3") }}
                     {{ footer_form.footer_text(size=32, class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+
+                <!--update-->
+                <form method="POST" action="/">
+                    {{ footercolor_form.csrf_token }}
+                    {{ footercolor_form.footer_color.label(class="form-label mt-3") }}
+                    {{ footercolor_form.footer_color(class="form-control form-control-color mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
     

@@ -32,6 +32,31 @@ class ImageUploadForm(FlaskForm):
 
 class SearchImageForm(FlaskForm):
     search_text = StringField('Search Image')
+    header_text = StringField(
+        'Header Text', validators=[DataRequired()]
+    )
+
+class FooterForm(FlaskForm):
+    footer_text = StringField(
+        'Footer Text', validators=[DataRequired()]
+    )
+
+class ImageUploadForm(FlaskForm):
+    image = FileField(
+        'Upload an Image'
+    )
+
+#updates 4/30:
+class HeaderColorForm(FlaskForm):
+    header_color = ColorField(
+        'Header Text Color'
+    )
+
+class FooterColorForm(FlaskForm):
+    footer_color = ColorField(
+        'Footer Text Color'
+    )
+
 
 current_settings = {
     'header_text': 'Header Text',
@@ -39,6 +64,10 @@ current_settings = {
     'user_image_filename': None,
     'searched_image': None,
     'searched_image_url': None
+    #update
+    'header_color': '#000000',
+    'footer_color': '#000000',
+    'user_image_filename': None
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -47,6 +76,9 @@ def index():
     footer_form = FooterForm()
     imageupload_form = ImageUploadForm()
     search_image_form = SearchImageForm()
+    #update
+    headercolor_form = HeaderColorForm()
+    footercolor_form = FooterColorForm()
 
     if request.method == 'POST':
         if header_form.header_text.data:
@@ -54,6 +86,14 @@ def index():
 
         if footer_form.footer_text.data:
             current_settings['footer_text'] = footer_form.footer_text.data
+        
+        #update
+        if headercolor_form.header_color.data:
+            current_settings['header_color'] = headercolor_form.header_color.data
+
+        if footercolor_form.footer_color.data:
+            current_settings['footer_color'] = footercolor_form.footer_color.data
+
 
         if imageupload_form.image.data:
             image_file = imageupload_form.image.data
@@ -83,6 +123,9 @@ def index():
                            footer_form=footer_form,
                            imageupload_form=imageupload_form,
                            search_image_form=search_image_form,
+                           #update
+                           headercolor_form=headercolor_form,
+                           footercolor_form=footercolor_form,
                            settings=current_settings)
 
 if __name__ == '__main__':
