@@ -81,19 +81,22 @@
 </head>
 <body>
     <div style="text-align:center;">
-        <h1 style="color: {{ settings.header_color }}">{{ settings.header_text }}</h1>
+        <h1 style="color: {{ settings.header_color }}; font-family: {{ settings.header_font }}">{{ settings.header_text }}</h1>
 
         <div style="border-style:solid; margin-left: 100px; margin-right:100px">
-        {% if settings.user_image_filename %}
+        {% if settings.image_filter %}
+            <img src= "{{ url_for('static', filename='uploads/new.jpg') }}" style="max-width: 400px;">
+        {% elif settings.user_image_filename %}
             <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
         {% elif settings.searched_image_url %}
             <img src= "{{ settings.searched_image_url }}" style="max-width: 400px;">
         {% else %}
             <p>Upload image to preview.</p>
         {% endif %}
+
         </div><br>
 
-        <h6 style="color: {{ settings.footer_color }}">{{ settings.footer_text }}</h6>
+        <h6 style="color: {{ settings.footer_color }}; font-family: {{ settings.footer_font }}">{{ settings.footer_text }}</h6>
     </div>
 
     <div class="container-fluid">
@@ -174,6 +177,13 @@
                     {{ search_image_form.csrf_token }}
                     {{ search_image_form.search_text.label(class="form-label mt-3") }}
                     {{ search_image_form.search_text(class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+
+                <form method="POST" action="/">
+                    {{ image_filter_form.csrf_token }}
+                    {{ image_filter_form.image_filter.label(class="form-label mt-3") }}
+                    {{ image_filter_form.image_filter(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
     </div>

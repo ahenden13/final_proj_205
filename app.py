@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from wtforms.fields import FileField
+from wtforms.fields import FileField, SelectField
 from wtforms.fields import ColorField
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -13,6 +13,7 @@ import requests, json
 from pprint import pprint
 from io import BytesIO
 import random
+from filters import negative_filter, grayscale_filter, sepia_filter
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ott3r' 
@@ -36,16 +37,6 @@ class SearchImageForm(FlaskForm):
         'Header Text', validators=[DataRequired()]
     )
 
-class FooterForm(FlaskForm):
-    footer_text = StringField(
-        'Footer Text', validators=[DataRequired()]
-    )
-
-class ImageUploadForm(FlaskForm):
-    image = FileField(
-        'Upload an Image'
-    )
-
 #updates 4/30:
 class HeaderColorForm(FlaskForm):
     header_color = ColorField(
@@ -57,17 +48,31 @@ class FooterColorForm(FlaskForm):
         'Footer Text Color'
     )
 
+'''
+class ImageFilterForm(FlaskForm):
+    image_filter = StringField(
+        'Image Filter'
+    )
+'''
+
+class ImageFilterForm(FlaskForm):
+    image_filter = SelectField('Image Filter', choices=[
+        ('none', 'No Filter'),
+        ('negative_filter', 'Negative'),
+        ('grayscale_filter', 'Grayscale'),
+        ('sepia_filter', 'Sepia')
+    ])
 
 current_settings = {
     'header_text': 'Header Text',
     'footer_text': 'Footer Text',
-    'user_image_filename': None,
     'searched_image': None,
     'searched_image_url': None,
     #update
     'header_color': '#000000',
     'footer_color': '#000000',
-    'user_image_filename': None
+    'user_image_filename': None,
+    'image_filter': None
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -79,6 +84,7 @@ def index():
     #update
     headercolor_form = HeaderColorForm()
     footercolor_form = FooterColorForm()
+    image_filter_form = ImageFilterForm()
 
     if request.method == 'POST':
         if header_form.header_text.data:
@@ -114,9 +120,32 @@ def index():
                 data = r.json()
                 image_url = data['results'][0]['urls']['regular']
                 current_settings['searched_image_url'] = image_url
+
+                image_response = requests.get(image_url)
+                img = Image.open(BytesIO(image_response.content))
+                img.save("static/uploads/img.jpg")
                 
             except:
                 print('please try again')
+
+        if image_filter_form.image_filter.data:
+            current_settings['image_filter'] = image_filter_form.image_filter.data
+            img = Image.open('static/uploads/img.jpg')
+            if current_settings['image_filter'] == "negative_filter":
+                #img = Image.open('static/uploads/img.jpg')
+                negative_filter(img)
+            elif current_settings['image_filter'] == "grayscale_filter":
+                #img = Image.open('static/uploads/img.jpg')
+                grayscale_filter(img)
+            elif current_settings['image_filter'] == "sepia_filter":
+                #img = Image.open('static/uploads/img.jpg')
+                sepia_filter(img)
+            elif current_settings['image_filter'] == "No Filter":
+                # After image upload or search
+                current_settings['image_filter'] = None
+
+            img.save('static/uploads/new.jpg')
+
 
     return render_template('index.html', 
                            header_form=header_form, 
@@ -126,6 +155,7 @@ def index():
                            #update
                            headercolor_form=headercolor_form,
                            footercolor_form=footercolor_form,
+                           image_filter_form=image_filter_form,
                            settings=current_settings)
 
 if __name__ == '__main__':
