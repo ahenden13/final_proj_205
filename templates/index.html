@@ -186,7 +186,21 @@
                     {{ image_filter_form.image_filter(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+
+                <!--sticker update-->
+                <form method="POST" action="/">
+                    {{ sticker_form.csrf_token }}
+                    {{ sticker_form.sticker.label(class="form-label") }}
+                    {{ sticker_form.sticker(size=32, class="form-control mb-2") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
     </div>
+    <div id="sticker-bar" style="overflow-x: auto; white-space: nowrap; margin-top: 20px;">
+        {% for sticker in settings.stickers %}
+            <img src="{{ sticker }}" alt="Sticker" class="sticker" style="width: 100px; height: 100px; margin-right: 10px; cursor: pointer;" onclick="addStickerToCard(this.src)">
+        {% endfor %}
+    </div>
+
 </body>
 
 <script>

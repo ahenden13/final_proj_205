@@ -14,6 +14,7 @@ from pprint import pprint
 from io import BytesIO
 import random
 from filters import negative_filter, grayscale_filter, sepia_filter
+from sticker_api import get_sticker #sticker update
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ott3r' 
@@ -63,6 +64,10 @@ class ImageFilterForm(FlaskForm):
         ('sepia_filter', 'Sepia')
     ])
 
+#sticker update
+class StickerForm(FlaskForm):
+    sticker = StringField("Search a Sticker", validators=[DataRequired()])
+
 current_settings = {
     'header_text': 'Header Text',
     'footer_text': 'Footer Text',
@@ -72,7 +77,9 @@ current_settings = {
     'header_color': '#000000',
     'footer_color': '#000000',
     'user_image_filename': None,
-    'image_filter': None
+    'image_filter': None,
+    #sticker update
+    'sticker':[]
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -85,6 +92,8 @@ def index():
     headercolor_form = HeaderColorForm()
     footercolor_form = FooterColorForm()
     image_filter_form = ImageFilterForm()
+    #sticker update
+    sticker_form = StickerForm()
 
     if request.method == 'POST':
         if header_form.header_text.data:
@@ -145,6 +154,14 @@ def index():
                 current_settings['image_filter'] = None
 
             img.save('static/uploads/new.jpg')
+    #sticker update
+        if sticker_form.sticker.data:
+            try:
+                sticker_word = sticker_form.sticker.data
+                stickers = get_sticker(sticker_word)
+                current_settings['stickers'] = stickers
+            except:
+                print("Try Again...")
 
 
     return render_template('index.html', 
@@ -156,6 +173,8 @@ def index():
                            headercolor_form=headercolor_form,
                            footercolor_form=footercolor_form,
                            image_filter_form=image_filter_form,
+                           #sticker update
+                           sticker_form=sticker_form,
                            settings=current_settings)
 
 if __name__ == '__main__':
