@@ -79,146 +79,177 @@
 
     </style>
 </head>
-<body>
-    <div style="text-align:center;">
-        <h1 style="color: {{ settings.header_color }}; font-family: {{ settings.header_font }}">{{ settings.header_text }}</h1>
-
-        <div style="border-style:solid; margin-left: 100px; margin-right:100px; background-color: {{ settings.background_color }}; border-color: {{ settings.border_color }};">
+<body class="d-flex flex-column">
+    <div class="d-flex justify-content-center my-4">
+        <!--CARD PREVIEW -->
+        <div style="
+            max-width: 800px; 
+            width: 100%; 
+            background-color: {{ settings.background_color }}; 
+            border: 4px solid black; 
+            border-radius: 12px; 
+            padding: 2rem; 
+            text-align: center;
+          ">
+          
+          <h1 style="color: {{ settings.header_color }}; font-family: {{ settings.header_font }};">
+            {{ settings.header_text | default('Header text here') }}
+          </h1>
+      
+          <div style="
+              background-color: white; 
+              border: 4px solid {{ settings.border_color }}; 
+              height: 400px; 
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              margin: 1.5rem 0;
+            ">
             {% if settings.image_filter %}
-                <img src="{{ url_for('static', filename='uploads/new.jpg') }}" style="max-width: 400px;">
+              <img src="{{ url_for('static', filename='uploads/new.jpg') }}" class="img-fluid" style="max-height: 100%; max-width: 100%;">
             {% elif settings.user_image_filename %}
-                <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
+              <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" class="img-fluid" style="max-height: 100%; max-width: 100%;">
             {% elif settings.searched_image_url %}
-                <img src="{{ settings.searched_image_url }}" style="max-width: 400px;">
-        {% else %}
-            <p>Upload image to preview.</p>
-        {% endif %}
+              <img src="{{ settings.searched_image_url }}" class="img-fluid" style="max-height: 100%; max-width: 100%;">
+            {% else %}
+              <span class="text-muted">Image will appear here</span>
+            {% endif %}
+          </div>
+      
+          <h5 style="color: {{ settings.footer_color }}; font-family: {{ settings.footer_font }};">
+            {{ settings.footer_text | default('Footer text here') }}
+          </h5>
+        </div>
+      </div>
 
-        </div><br>
-
-        <h6 style="color: {{ settings.footer_color }}; font-family: {{ settings.footer_font }}">{{ settings.footer_text }}</h6>
+    <!-- STICKERS -->
+    <div id="sticker-bar" class="container mb-4">
+        <div class="d-flex overflow-auto">
+            {% for sticker in settings.stickers %}
+                <img src="{{ sticker }}" alt="Sticker" class="sticker me-2"
+                     style="width: 100px; height: 100px; cursor: pointer;" onclick="addStickerToCard(this.src)">
+            {% endfor %}
+        </div>
     </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            
-            <!-- Sidebar Forms -->
-            <div class="col-md-3 p-4" style="background-color: #f8f9fa;">
-                <h4>Edit Your Card</h4>
-    
+    <!-- EDIT FORMS -->
+    <div class="container-fluid bg-light py-4 mt-auto">
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3 justify-content-center">
+
+            <!-- Header Text -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ header_form.csrf_token }}
                     {{ header_form.header_text.label(class="form-label") }}
                     {{ header_form.header_text(size=32, class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+            </div>
 
-                <select id="headerFontSelector">
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="Garamond, serif">Garamond</option>
-                    <option value="Courier New, monospace">Courier New</option>
-                    <option value="Tagesschrift, system-ui">Tagesschrift</option>
-                    <option value="Coral Pixels, serif">Coral Pixels</option>
-                    <option value="Cal Sans, sans-serif">Cal Sans</option>
-                    <option value="Playfair Display, serif">Playfair Display</option>
-                    <option value="Bebas Neue, sans-serif">Bebas Neue</option>
-                    <option value="Dancing Script, cursive">Dancing Script</option>
-                    <option value="Alfa Slab One, serif">Alfa Slab One</option>
-                    <option value="Pacifico, cursive">Pacifico</option>
-                    <option value="Amatic SC, sans-serif">Amatic SC</option>
-                </select>
+            <!-- Header Font -->
+            <div class="col">
+                <form method="POST">
+                    {{ header_font_form.hidden_tag() }}
+                    {{ header_font_form.header_font.label }}
+                    {{ header_font_form.header_font(class="form-select") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>
+            </div>
 
-                <!--update-->
+            <!-- Header Color -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ headercolor_form.csrf_token }}
-                    {{ headercolor_form.header_color.label(class="form-label mt-3") }}
+                    {{ headercolor_form.header_color.label(class="form-label") }}
                     {{ headercolor_form.header_color(class="form-control form-control-color mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
-    
+            </div>
+
+            <!-- Footer Text -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ footer_form.csrf_token }}
-                    {{ footer_form.footer_text.label(class="form-label mt-3") }}
+                    {{ footer_form.footer_text.label(class="form-label") }}
                     {{ footer_form.footer_text(size=32, class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+            </div>
 
-                <select id="footerFontSelector">
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="Garamond, serif">Garamond</option>
-                    <option value="Courier New, monospace">Courier New</option>
-                    <option value="Tagesschrift, system-ui">Tagesschrift</option>
-                    <option value="Coral Pixels, serif">Coral Pixels</option>
-                    <option value="Cal Sans, sans-serif">Cal Sans</option>
-                    <option value="Playfair Display, serif">Playfair Display</option>
-                    <option value="Bebas Neue, sans-serif">Bebas Neue</option>
-                    <option value="Dancing Script, cursive">Dancing Script</option>
-                    <option value="Alfa Slab One, serif">Alfa Slab One</option>
-                    <option value="Pacifico, cursive">Pacifico</option>
-                    <option value="Amatic SC, sans-serif">Amatic SC</option>
-                </select>
+            <!-- Footer Font -->
+            <div class="col">
+                <form method="POST">
+                    {{ footer_font_form.hidden_tag() }}
+                    {{ footer_font_form.footer_font.label }}
+                    {{ footer_font_form.footer_font(class="form-select") }}
+                    <input type="submit" value="Submit" class="btn btn-primary w-100">
+                </form>                
+            </div>
 
-                <!--update-->
+            <!-- Footer Color -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ footercolor_form.csrf_token }}
-                    {{ footercolor_form.footer_color.label(class="form-label mt-3") }}
+                    {{ footercolor_form.footer_color.label(class="form-label") }}
                     {{ footercolor_form.footer_color(class="form-control form-control-color mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
-    
+            </div>
+
+            <!-- Upload Image -->
+            <div class="col">
                 <form method="POST" action="/" enctype="multipart/form-data">
                     {{ imageupload_form.csrf_token }}
-                    {{ imageupload_form.image.label(class="form-label mt-3") }}
+                    {{ imageupload_form.image.label(class="form-label") }}
                     {{ imageupload_form.image(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+            </div>
 
+            <!-- Search Image -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ search_image_form.csrf_token }}
-                    {{ search_image_form.search_text.label(class="form-label mt-3") }}
+                    {{ search_image_form.search_text.label(class="form-label") }}
                     {{ search_image_form.search_text(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+            </div>
 
+            <!-- Filter -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ image_filter_form.csrf_token }}
-                    {{ image_filter_form.image_filter.label(class="form-label mt-3") }}
+                    {{ image_filter_form.image_filter.label(class="form-label") }}
                     {{ image_filter_form.image_filter(class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+            </div>
 
-                <!--sticker update-->
+            <!-- Sticker -->
+            <div class="col">
                 <form method="POST" action="/">
                     {{ sticker_form.csrf_token }}
                     {{ sticker_form.sticker.label(class="form-label") }}
                     {{ sticker_form.sticker(size=32, class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+            </div>
 
-                <!--Background/border update-->
-                <form method="POST" action="/" class="mt-4">
+            <!-- Card Styles -->
+            <div class="col">
+                <form method="POST" action="/">
                     {{ cardstyle_form.csrf_token }}
-                    
-                    <div class="form-group">
-                        {{ cardstyle_form.background_color.label(class="form-label") }}
-                        {{ cardstyle_form.background_color(class="form-control form-control-color") }}
-                    </div>
-                    
-                    <div class="form-group mt-2">
-                        {{ cardstyle_form.border_color.label(class="form-label") }}
-                        {{ cardstyle_form.border_color(class="form-control form-control-color") }}
-                    </div>
-                
-                    <button type="submit" class="btn btn-primary mt-3">Apply Card Styles</button>
+                    {{ cardstyle_form.background_color.label(class="form-label") }}
+                    {{ cardstyle_form.background_color(class="form-control form-control-color mb-2") }}
+                    {{ cardstyle_form.border_color.label(class="form-label") }}
+                    {{ cardstyle_form.border_color(class="form-control form-control-color mb-2") }}
+                    <input type="submit" value="Apply Styles" class="btn btn-primary w-100">
                 </form>
-                
-    </div>
-    <div id="sticker-bar" style="overflow-x: auto; white-space: nowrap; margin-top: 20px;">
-        {% for sticker in settings.stickers %}
-            <img src="{{ sticker }}" alt="Sticker" class="sticker" style="width: 100px; height: 100px; margin-right: 10px; cursor: pointer;" onclick="addStickerToCard(this.src)">
-        {% endfor %}
-    </div>
+            </div>
 
+        </div>
+    </div>
 </body>
 
 <script>
@@ -234,7 +265,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         const fontSelector = document.getElementById("footerFontSelector");
-        const header = document.querySelector("h6");
+        const header = document.querySelector("h5");
 
         fontSelector.addEventListener("change", (event) => {
             const selectedFont = event.target.value;

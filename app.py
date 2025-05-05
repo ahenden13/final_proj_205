@@ -29,6 +29,44 @@ class HeaderForm(FlaskForm):
 class FooterForm(FlaskForm):
     footer_text = StringField('Footer Text', validators=[DataRequired()])
 
+class HeaderFontForm(FlaskForm):
+    header_font = SelectField('Header Font', choices=[
+        ('Arial', 'Arial'),
+        ('Times New Roman', 'Times New Roman'),
+        ('Courier New', 'Courier New'),
+        ('Georgia', 'Georgia'),
+        ('Verdana', 'Verdana'),
+        ('Garamond', 'Garamond'),
+        ('"Tagesschrift"', '"Tagesschrift"'),
+        ('"Coral Pixels"', '"Coral Pixels"'),
+        ('"Cal Sans"', '"Cal Sans"'), 
+        ('"Playfair Display"', '"Playfair Display"'),
+        ('"Bebas Neue"', '"Bebas Neue"'), 
+        ('"Dancing Script"', '"Dancing Script"'), 
+        ('"Alfa Slab One"', '"Alfa Slab One"'),
+        ('"Pacifico"', '"Pacifico"'), 
+        ('"Amatic SC"', '"Amatic SC"'),
+    ], validators=[DataRequired()])
+
+class FooterFontForm(FlaskForm):
+    footer_font = SelectField('Footer Font', choices=[
+        ('Arial', 'Arial'),
+        ('Times New Roman', 'Times New Roman'),
+        ('Courier New', 'Courier New'),
+        ('Georgia', 'Georgia'),
+        ('Verdana', 'Verdana'),
+        ('Garamond', 'Garamond'),
+        ('"Tagesschrift"', '"Tagesschrift"'),
+        ('"Coral Pixels"', '"Coral Pixels"'),
+        ('"Cal Sans"', '"Cal Sans"'), 
+        ('"Playfair Display"', '"Playfair Display"'),
+        ('"Bebas Neue"', '"Bebas Neue"'), 
+        ('"Dancing Script"', '"Dancing Script"'), 
+        ('"Alfa Slab One"', '"Alfa Slab One"'),
+        ('"Pacifico"', '"Pacifico"'), 
+        ('"Amatic SC"', '"Amatic SC"'),
+    ], validators=[DataRequired()])
+
 class ImageUploadForm(FlaskForm):
     image = FileField('Upload an Image')
 
@@ -87,7 +125,7 @@ current_settings = {
     #sticker update
     'sticker':[], 
     #background/broder update
-    'background_color': '#000000',
+    'background_color': 'rgb(255, 255, 255)',
     'border_color': '#000000',
 }
 
@@ -95,6 +133,8 @@ current_settings = {
 def index():
     header_form = HeaderForm()
     footer_form = FooterForm()
+    header_font_form = HeaderFontForm()
+    footer_font_form = FooterFontForm()
     imageupload_form = ImageUploadForm()
     search_image_form = SearchImageForm()
     #update
@@ -120,6 +160,11 @@ def index():
         if footercolor_form.footer_color.data:
             current_settings['footer_color'] = footercolor_form.footer_color.data
 
+        if header_font_form.header_font.data:
+            current_settings['header_font'] = header_font_form.header_font.data
+
+        if footer_font_form.footer_font.data:
+            current_settings['footer_font'] = footer_font_form.footer_font.data
 
         if imageupload_form.image.data:
             image_file = imageupload_form.image.data
@@ -175,17 +220,18 @@ def index():
                 print("Try Again...")
 
     #Background/border update
-        if cardstyle_form.validate_on_submit():
-            if cardstyle_form.background_color.data:
-                current_settings['background_color'] = cardstyle_form.background_color.data
-            if cardstyle_form.border_color.data:
-                current_settings['border_color'] = cardstyle_form.border_color.data
+        if cardstyle_form.background_color.data:
+            current_settings['background_color'] = cardstyle_form.background_color.data
+        if cardstyle_form.border_color.data:
+            current_settings['border_color'] = cardstyle_form.border_color.data
 
 
 
     return render_template('index.html', 
                            header_form=header_form, 
                            footer_form=footer_form,
+                           header_font_form=header_font_form,
+                           footer_font_form=footer_font_form,
                            imageupload_form=imageupload_form,
                            search_image_form=search_image_form,
                            #update
