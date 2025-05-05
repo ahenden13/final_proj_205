@@ -68,6 +68,12 @@ class ImageFilterForm(FlaskForm):
 class StickerForm(FlaskForm):
     sticker = StringField("Search a Sticker", validators=[DataRequired()])
 
+#Border/Background update
+class CardStyleForm(FlaskForm):
+    background_color = ColorField('Card Background Color')
+    border_color = ColorField('Card Border Color')
+
+
 current_settings = {
     'header_text': 'Header Text',
     'footer_text': 'Footer Text',
@@ -79,7 +85,10 @@ current_settings = {
     'user_image_filename': None,
     'image_filter': None,
     #sticker update
-    'sticker':[]
+    'sticker':[], 
+    #background/broder update
+    'background_color': '#000000',
+    'border_color': '#000000',
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -94,6 +103,8 @@ def index():
     image_filter_form = ImageFilterForm()
     #sticker update
     sticker_form = StickerForm()
+    #background/broder update
+    cardstyle_form = CardStyleForm()
 
     if request.method == 'POST':
         if header_form.header_text.data:
@@ -163,6 +174,14 @@ def index():
             except:
                 print("Try Again...")
 
+    #Background/border update
+        if cardstyle_form.validate_on_submit():
+            if cardstyle_form.background_color.data:
+                current_settings['background_color'] = cardstyle_form.background_color.data
+            if cardstyle_form.border_color.data:
+                current_settings['border_color'] = cardstyle_form.border_color.data
+
+
 
     return render_template('index.html', 
                            header_form=header_form, 
@@ -175,7 +194,9 @@ def index():
                            image_filter_form=image_filter_form,
                            #sticker update
                            sticker_form=sticker_form,
-                           settings=current_settings)
+                           settings=current_settings,
+                           #Background/border update
+                           cardstyle_form=cardstyle_form)
 
 if __name__ == '__main__':
     app.run(debug=True)

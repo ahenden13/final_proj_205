@@ -83,13 +83,13 @@
     <div style="text-align:center;">
         <h1 style="color: {{ settings.header_color }}; font-family: {{ settings.header_font }}">{{ settings.header_text }}</h1>
 
-        <div style="border-style:solid; margin-left: 100px; margin-right:100px">
-        {% if settings.image_filter %}
-            <img src= "{{ url_for('static', filename='uploads/new.jpg') }}" style="max-width: 400px;">
-        {% elif settings.user_image_filename %}
-            <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
-        {% elif settings.searched_image_url %}
-            <img src= "{{ settings.searched_image_url }}" style="max-width: 400px;">
+        <div style="border-style:solid; margin-left: 100px; margin-right:100px; background-color: {{ settings.background_color }}; border-color: {{ settings.border_color }};">
+            {% if settings.image_filter %}
+                <img src="{{ url_for('static', filename='uploads/new.jpg') }}" style="max-width: 400px;">
+            {% elif settings.user_image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + settings.user_image_filename) }}" style="max-width: 400px;">
+            {% elif settings.searched_image_url %}
+                <img src="{{ settings.searched_image_url }}" style="max-width: 400px;">
         {% else %}
             <p>Upload image to preview.</p>
         {% endif %}
@@ -194,6 +194,24 @@
                     {{ sticker_form.sticker(size=32, class="form-control mb-2") }}
                     <input type="submit" value="Submit" class="btn btn-primary w-100">
                 </form>
+
+                <!--Background/border update-->
+                <form method="POST" action="/" class="mt-4">
+                    {{ cardstyle_form.csrf_token }}
+                    
+                    <div class="form-group">
+                        {{ cardstyle_form.background_color.label(class="form-label") }}
+                        {{ cardstyle_form.background_color(class="form-control form-control-color") }}
+                    </div>
+                    
+                    <div class="form-group mt-2">
+                        {{ cardstyle_form.border_color.label(class="form-label") }}
+                        {{ cardstyle_form.border_color(class="form-control form-control-color") }}
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary mt-3">Apply Card Styles</button>
+                </form>
+                
     </div>
     <div id="sticker-bar" style="overflow-x: auto; white-space: nowrap; margin-top: 20px;">
         {% for sticker in settings.stickers %}
