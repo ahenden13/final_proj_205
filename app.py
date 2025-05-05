@@ -168,9 +168,10 @@ def index():
 
         if imageupload_form.image.data:
             image_file = imageupload_form.image.data
-            filename = secure_filename(image_file.filename)
-            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            current_settings['user_image_filename'] = filename
+            save_path = os.path.join('static', 'uploads', 'img.jpg')
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            image_file.save(save_path)
+            current_settings['user_image_filename'] = 'img.jpg'
 
         if search_image_form.search_text.data:
             page_num = random.randint(0, 10) * random.randint(0, 10)
