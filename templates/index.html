@@ -248,6 +248,14 @@
                 </form>
             </div>
 
+            <!-- Reset Card Button -->
+            <div class="col">
+                <form method="POST" action="/">
+                    {{ reset_form.csrf_token }}
+                    {{ reset_form.reset(class="btn btn-danger w-100") }}
+                </form>
+            </div>
+
         </div>
     </div>
 </body>

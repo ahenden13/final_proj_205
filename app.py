@@ -111,6 +111,8 @@ class CardStyleForm(FlaskForm):
     background_color = ColorField('Card Background Color')
     border_color = ColorField('Card Border Color')
 
+class ResetForm(FlaskForm):
+    reset = SubmitField('Reset Card')
 
 current_settings = {
     'header_text': 'Header Text',
@@ -127,6 +129,8 @@ current_settings = {
     #background/broder update
     'background_color': 'rgb(255, 255, 255)',
     'border_color': '#000000',
+    'header_font': 'Arial',
+    'footer_font': 'Arial',
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -145,8 +149,32 @@ def index():
     sticker_form = StickerForm()
     #background/broder update
     cardstyle_form = CardStyleForm()
+    reset_form = ResetForm()
+
 
     if request.method == 'POST':
+        if reset_form.reset.data:
+            current_settings.update({
+                'header_text': 'Header Text',
+                'footer_text': 'Footer Text',
+                'searched_image': None,
+                'searched_image_url': None,
+                'header_color': '#000000',
+                'footer_color': '#000000',
+                'user_image_filename': None,
+                'image_filter': None,
+                'sticker': [],
+                'background_color': 'rgb(255, 255, 255)',
+                'border_color': '#000000',
+                'header_font': 'Arial',
+                'footer_font': 'Arial',
+            })
+            try:
+                os.remove('static/uploads/img.jpg')
+                os.remove('static/uploads/new.jpg')
+            except:
+                pass
+            return redirect('/')
         if header_form.header_text.data:
             current_settings['header_text'] = header_form.header_text.data
 
@@ -168,9 +196,10 @@ def index():
 
         if imageupload_form.image.data:
             image_file = imageupload_form.image.data
-            filename = secure_filename(image_file.filename)
-            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            current_settings['user_image_filename'] = filename
+            save_path = os.path.join('static', 'uploads', 'img.jpg')
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            image_file.save(save_path)
+            current_settings['user_image_filename'] = 'img.jpg'
 
         if search_image_form.search_text.data:
             page_num = random.randint(0, 10) * random.randint(0, 10)
@@ -242,7 +271,8 @@ def index():
                            sticker_form=sticker_form,
                            settings=current_settings,
                            #Background/border update
-                           cardstyle_form=cardstyle_form)
+                           cardstyle_form=cardstyle_form,
+                           reset_form=reset_form)
 
 if __name__ == '__main__':
     app.run(debug=True)
