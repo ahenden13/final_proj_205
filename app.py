@@ -111,6 +111,20 @@ class CardStyleForm(FlaskForm):
     background_color = ColorField('Card Background Color')
     border_color = ColorField('Card Border Color')
 
+class FooterAlignmentForm(FlaskForm):
+    footer_alignment = SelectField('Footer alignment', choices=[
+        ('center', 'Center'),
+        ('left', 'Left'),
+        ('right', 'Right'),
+    ], validators=[DataRequired()])
+
+class HeaderAlignmentForm(FlaskForm):
+    header_alignment = SelectField('Header alignment', choices=[
+        ('center', 'Center'),
+        ('left', 'Left'),
+        ('right', 'Right'),
+    ], validators=[DataRequired()])
+
 class ResetForm(FlaskForm):
     reset = SubmitField('Reset Card')
 
@@ -131,6 +145,8 @@ current_settings = {
     'border_color': '#000000',
     'header_font': 'Arial',
     'footer_font': 'Arial',
+    'footer_alignment': 'center',
+    'header_alignment': 'center',
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -149,6 +165,8 @@ def index():
     sticker_form = StickerForm()
     #background/broder update
     cardstyle_form = CardStyleForm()
+    footer_alignment_form = FooterAlignmentForm()
+    header_alignment_form = HeaderAlignmentForm()
     reset_form = ResetForm()
 
 
@@ -168,6 +186,8 @@ def index():
                 'border_color': '#000000',
                 'header_font': 'Arial',
                 'footer_font': 'Arial',
+                'footer_alignment': 'center',
+                'header_alignment': 'center',
             })
             try:
                 os.remove('static/uploads/img.jpg')
@@ -193,6 +213,12 @@ def index():
 
         if footer_font_form.footer_font.data:
             current_settings['footer_font'] = footer_font_form.footer_font.data
+
+        if header_alignment_form.header_alignment.data:
+            current_settings['header_alignment'] = header_alignment_form.header_alignment.data
+
+        if footer_alignment_form.footer_alignment.data:
+            current_settings['footer_alignment'] = footer_alignment_form.footer_alignment.data
 
         if imageupload_form.image.data:
             image_file = imageupload_form.image.data
@@ -272,6 +298,8 @@ def index():
                            settings=current_settings,
                            #Background/border update
                            cardstyle_form=cardstyle_form,
+                           footer_alignment_form=footer_alignment_form,
+                           header_alignment_form=header_alignment_form,
                            reset_form=reset_form)
 
 if __name__ == '__main__':
