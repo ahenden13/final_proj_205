@@ -172,6 +172,7 @@ def index():
 
     if request.method == 'POST':
         if reset_form.reset.data:
+            del current_settings['stickers']
             current_settings.update({
                 'header_text': 'Header Text',
                 'footer_text': 'Footer Text',
