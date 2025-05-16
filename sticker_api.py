@@ -6,7 +6,7 @@ def get_sticker(query):
     params = {
         "api_key": sticker_key,
         "q": query,
-        "limit": 3,
+        "limit": 10,
         "rating":"g",
         "lang":"en"
     }

@@ -140,6 +140,7 @@ current_settings = {
     'image_filter': None,
     #sticker update
     'sticker':[], 
+    'selected_stickers':[],
     #background/broder update
     'background_color': 'rgb(255, 255, 255)',
     'border_color': '#000000',
@@ -182,6 +183,7 @@ def index():
                 'user_image_filename': None,
                 'image_filter': None,
                 'sticker': [],
+                'selected_stickers':[],
                 'background_color': 'rgb(255, 255, 255)',
                 'border_color': '#000000',
                 'header_font': 'Arial',
@@ -270,9 +272,16 @@ def index():
             try:
                 sticker_word = sticker_form.sticker.data
                 stickers = get_sticker(sticker_word)
-                current_settings['stickers'] = stickers
+                current_settings['sticker'] = stickers
             except:
                 print("Try Again...")
+        if 'select_sticker' in request.form:
+            sticker_url = request.form['select_sticker']
+            if sticker_url in current_settings['selected_stickers']:
+                current_settings['selected_stickers'].append(sticker_url)
+            else:
+                if len(current_settings['selected_stickers']) < 3:
+                    current_settings['selected_stickers'].append(sticker_url)
 
     #Background/border update
         if cardstyle_form.background_color.data:

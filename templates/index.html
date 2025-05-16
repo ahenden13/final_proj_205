@@ -48,8 +48,8 @@
               <span class="text-muted">Image will appear here</span>
             {% endif %}
             <!-- UPDATED STICKER PLACEMENT -->
-            {%if settings.stickers %}
-                {% for sticker in settings.stickers %}
+            {%if settings.sticker %}
+                {% for sticker in settings.selected_stickers %}
                 {% if loop.index0 == 0 %}
                   <img src="{{ sticker }}" 
                        style="position: absolute; 
@@ -83,13 +83,31 @@
       </div>
 
     <!-- STICKERS -->
-    <!-- <div id="sticker-bar" class="container mb-4">
+    <div id="sticker-bar" class="container mb-4">
         <div class="d-flex overflow-auto">
-            {% for sticker in settings.stickers %}
-                <img src="{{ sticker }}" alt="Sticker" class="sticker me-2"
-                     style="width: 100px; height: 100px; cursor: pointer;" onclick="addStickerToCard(this.src)">
+            {% for sticker in settings.sticker %}
+                <form method="POST" action="/" style="margin-right: 10px;">
+                    <input type="hidden" name="select_sticker" value="{{ sticker }}">
+                    <button type="submit" style="border: none; background: none; padding: 0;">
+                        <img src="{{ sticker }}" alt="Sticker" 
+                            class="sticker me-2"
+                            style="width: 100px; height: 100px; cursor: pointer;
+                                    {% if sticker in settings.selected_stickers %}border: 3px solid pink;{% endif %}">
+                    </button>
+                </form>
             {% endfor %}
-        </div> -->
+        </div>
+    </div>
+
+        <!-- <div id="sticker-bar" class="container mb-4">
+            <div class="d-flex overflow-auto">
+                {% for sticker in settings.sticker %}
+                    <img src="{{ sticker }}" alt="Sticker" class="sticker me-2"
+                         style="width: 100px; height: 100px; cursor: pointer;" onclick="addStickerToCard(this.src)">
+                {% endfor %}
+            </div> -->
+
+        
 
 
     <!-- EDIT FORMS -->
